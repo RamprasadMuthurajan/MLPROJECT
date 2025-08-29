@@ -1,13 +1,18 @@
 #Why Data Ingestion ?
 #It is to read data from different data sources, for example some data will be stored in the MongoDB , some will be stored in the different databases
+#dataclass is used only for configuration why
 import os
 import sys
 from src.exception import CustomException
 from src.logger import logging
 import pandas
-
+import dataclasses
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
+
+from src.components.data_transformation import DataTransformation
+from src.components.data_transformation import DataTransformationConfig
+from src.components.model_trainer import ModelTrainer,ModelTrainerConfig
 
 #decorator
 @dataclass
@@ -50,8 +55,14 @@ class DataIngestion:
             raise CustomException(e,sys)
 if __name__=="__main__":
     obj=DataIngestion()
-    obj.initiate_data_ingestion()
+    train_data,test_data=obj.initiate_data_ingestion() #this method return train and test data stored path
 
+    data_transformation=DataTransformation()
+    train_arr,test_arr,_=data_transformation.initiate_data_transformation(train_data,test_data)
+
+    modeltrainer=ModelTrainer()
+    print(modeltrainer.initiate_model_trainer(train_arr,test_arr))
+    
 
 
 
